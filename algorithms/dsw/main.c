@@ -78,6 +78,7 @@ struct node *insert_node(struct node *tree, int val)
     return tree;
 }
 
+// Searching
 void pre_order_traversal(struct node *tree)
 {
     if (tree != NULL)
@@ -88,6 +89,7 @@ void pre_order_traversal(struct node *tree)
     }
 }
 
+// Utility
 int total_nodes(struct node *tree)
 {
     if (tree == NULL)
@@ -96,7 +98,7 @@ int total_nodes(struct node *tree)
         return (total_nodes(tree->left) + total_nodes(tree->right) + 1);
 }
 
-// DSW Algorithms
+// Rotations
 void rotate_right(struct node *root)
 {
     // Swap values
@@ -116,8 +118,8 @@ void rotate_left(struct node *root)
 {
     // Swap values
     int x = root->data;
-    root->data = root->left->data;
-    root->left->data = x;
+    root->data = root->right->data;
+    root->right->data = x;
 
     // Perform rotation
     struct node *temp = root->right;
@@ -127,6 +129,7 @@ void rotate_left(struct node *root)
     root->left = temp;
 }
 
+// DSW Algorithms
 struct node *create_backbone(struct node *root)
 {
     struct node *temp = root;
@@ -160,31 +163,35 @@ int get_perfect_tree_node_count(int n)
     return res - 1;
 }
 
-// struct node *balance_dsw(struct node *root, int n)
-// {
-//     int m = 2 * (n / 2) - 1;
-
-//     for (int i = 0; i < m; i++)
-//     {
-//         rotate_right(root);
-//     }
-
-//     while (m > 1)
-//     {
-//         m /= 2;
-
-//         for (int i = 0; i < m; i++)
-//         {
-//             rotate_left(root);
-//         }
-//     }
-
-//     return root;
-// }
-
 void balance_backbone(struct node *root, int n)
 {
-    // Code
+    int i = 0;
+    int extra_node_count = n - get_perfect_tree_node_count(n);
+
+    struct node *current_node = root;
+
+    while (i < extra_node_count)
+    {
+        rotate_left(current_node);
+        current_node = current_node->right;
+        i++;
+    }
+
+    int iterations = get_perfect_tree_node_count(n);
+
+    while (iterations > 0)
+    {
+        iterations = iterations / 2;
+        i = 0;
+        current_node = root;
+
+        while (i < iterations)
+        {
+            rotate_left(current_node);
+            current_node = current_node->right;
+            i++;
+        }
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -202,16 +209,17 @@ int main(int argc, char const *argv[])
     printf("\n");
 
     tree = create_backbone(tree);
-    printf("\n--- Backbone---\n");
+    printf("\n--- Backbone/ Vine ---\n");
     pre_order_traversal(tree);
     printf("\n");
 
+    printf("\n Folowing data is required for DSW calculations,\n");
     int n = total_nodes(tree);
     int res = get_perfect_tree_node_count(n);
-    printf("total nodes: %d %d\n", n, res);
+    printf("total nodes: %d | perfect tree node count: %d | extra node count: %d\n", n, res, n - res);
 
     balance_backbone(tree, n);
-    printf("\n--- Balanced BST---\n");
+    printf("\n--- After DSW - Balanced BST---\n");
     pre_order_traversal(tree);
     printf("\n");
 
