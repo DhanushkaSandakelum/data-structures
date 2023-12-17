@@ -21,25 +21,6 @@ long long power(int base, int exponent)
     return result;
 }
 
-double calculate_log2(double x)
-{
-    if (x <= 0)
-    {
-        // Logarithm is undefined for non-positive numbers
-        printf("Error: Logarithm is undefined for non-positive numbers.\n");
-        return 0.0; // You may want to return an error or handle it differently
-    }
-
-    double result = 0.0;
-    while (x >= 2.0)
-    {
-        x /= 2.0;
-        result += 1.0;
-    }
-
-    return result;
-}
-
 // Node structure
 struct node
 {
@@ -96,6 +77,30 @@ int total_nodes(struct node *tree)
         return 0;
     else
         return (total_nodes(tree->left) + total_nodes(tree->right) + 1);
+}
+
+int tree_height(struct node *tree)
+{
+    int left_height, right_height;
+
+    if (tree == NULL)
+    {
+        return 0;
+    }
+    else
+    {
+        left_height = tree_height(tree->left);
+        right_height = tree_height(tree->right);
+
+        if (left_height > right_height)
+        {
+            return (left_height + 1);
+        }
+        else
+        {
+            return (right_height + 1);
+        }
+    }
 }
 
 // Rotations
@@ -206,14 +211,14 @@ int main(int argc, char const *argv[])
 
     printf("\n--- Before DSW - Unbalanced BST ---\n");
     pre_order_traversal(tree);
-    printf("\n");
+    printf("\ntree height: %d\n", tree_height(tree));
 
     tree = create_backbone(tree);
     printf("\n--- Backbone/ Vine ---\n");
     pre_order_traversal(tree);
-    printf("\n");
+    printf("\ntree height: %d\n", tree_height(tree));
 
-    printf("\n Folowing data is required for DSW calculations,\n");
+    printf("\nFolowing data is required for DSW calculations,\n");
     int n = total_nodes(tree);
     int res = get_perfect_tree_node_count(n);
     printf("total nodes: %d | perfect tree node count: %d | extra node count: %d\n", n, res, n - res);
@@ -221,7 +226,7 @@ int main(int argc, char const *argv[])
     balance_backbone(tree, n);
     printf("\n--- After DSW - Balanced BST---\n");
     pre_order_traversal(tree);
-    printf("\n");
+    printf("\ntree height: %d\n", tree_height(tree));
 
     return 0;
 }
